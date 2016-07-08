@@ -1,0 +1,38 @@
+version: "2"
+services:
+
+  rancher:
+    build:
+      context: .
+      dockerfile: ./containers/rancher/Dockerfile
+    ports:
+      - "8000:8080"
+    restart: always
+
+  registry:
+    build:
+      context: .
+      dockerfile: ./containers/registry/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      SETTINGS_FLAVOR: s3
+      SEARCH_BACKEND: sqlalchemy
+      AWS_KEY: :${AWS_KEY}
+      AWS_SECRET: :${AWS_SECRET}
+      AWS_BUCKET: :${AWS_BUCKET_NAME}
+    restart: always
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: ./containers/jenkins/Dockerfile
+    ports:
+      - "8001:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
+volumes:
+  rancher-data:
+  jenkins-data:
